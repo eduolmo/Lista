@@ -37,11 +37,6 @@ public class NewItemActivity extends AppCompatActivity {
                 ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);
                 imvfotoPreview.setImageURI(photoSelected);
 
-                MyItem myItem = new MyItem();
-                myItem.title = data.getStringExtra("title");
-                myItem.description = data.getStringExtra("description");
-                myItem.photo = data.getData();
-                itens.add(myItem);
             }
         }
     }
