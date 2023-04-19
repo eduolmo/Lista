@@ -7,17 +7,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 import olmo.eduardo.galeria.R;
 import olmo.eduardo.galeria.adapter.MyAdapter;
 import olmo.eduardo.galeria.model.MyItem;
+import olmo.eduardo.galeria.model.Util;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -79,8 +83,18 @@ public class MainActivity extends AppCompatActivity {
                 myItem.title = data.getStringExtra("title");
                 //inserindo a descrição no item
                 myItem.description = data.getStringExtra("description");
-                //inserindo a url da imagem no item
-                myItem.photo = data.getData();
+                //pegando a URI da imagem selecionada
+                Uri selectedPhotoURI = data.getData();
+                try {
+                    //copiando a imagem a partir da URI
+                    Bitmap photo = Util.getBitmap(MainActivity.this,selectedPhotoURI,100,100);
+                    //adicionando a imagem no item
+                    myItem.photo = photo;
+                }
+                catch (FileNotFoundException e){
+                    e.printStackTrace();
+                }
+
                 //inserindo o novo item na lista de itens
                 itens.add(myItem);
                 //notificando que um novo item foi inserido na lista
