@@ -44,7 +44,7 @@ public class MyAdapter extends RecyclerView.Adapter{
         //pegando um campo de imagem pelo id
         ImageView imvPhoto = v.findViewById(R.id.imvPhoto);
         //colocando uma imagem dentro do campo de imagem
-        imvPhoto.setImageURI(myItem.photo);
+        imvPhoto.setImageBitmap(myItem.photo);
         //pegando o campo do título pelo id
         TextView tvTitle = v.findViewById(R.id.tvTitle);
         //colocando texto no campo do título

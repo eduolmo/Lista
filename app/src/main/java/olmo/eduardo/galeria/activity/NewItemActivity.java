@@ -2,6 +2,7 @@ package olmo.eduardo.galeria.activity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,38 +18,37 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import olmo.eduardo.galeria.R;
 import olmo.eduardo.galeria.model.MyItem;
+import olmo.eduardo.galeria.model.NewItemActivityViewModel;
 
 public class NewItemActivity extends AppCompatActivity {
 
     //variável que identifica os requests
     static int PHOTO_PICKER_REQUEST = 1;
-    //estabelecendo que a URI da foto selecionada é inicialmente null
-    Uri photoSelected = null;
-
-    @Override
-    protected void onActivityResult(int resquestCode, int resultCode, @Nullable Intent data){
-        super.onActivityResult(resquestCode,resultCode,data);
-        //conferindo se a resposta recebida corresponde ao request
-        if(resquestCode == PHOTO_PICKER_REQUEST){
-            //conferindo se a resposta tem dados
-            if(resultCode == Activity.RESULT_OK){
-                //pegando os dados da resposta e colocando na variavel
-                photoSelected = data.getData();
-                //pegando o campo de imagem pelo id
-                ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);
-                //colocando a imagem selecionada dentro do campo de imagem
-                imvfotoPreview.setImageURI(photoSelected);
-
-            }
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_item);
+
+        //criando nova view model
+        NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);
+
+        //pegando URI da selecionada de dentro view model
+        Uri selectedPhotoLocation = vm.getSelectedPhotoLocation();
+
+        //conferindo se a URI não é nula
+        if(selectedPhotoLocation != null){
+
+            //pegando o campo de imagem pelo id
+            ImageView imvPhotoPreview = findViewById(R.id.imvPhotoPreview);
+
+            //inserindo a URI no campo de imagem
+            imvPhotoPreview.setImageURI(selectedPhotoLocation);
+        }
+
         //pegando o botao da galeria pelo id
         ImageButton imgCI = findViewById(R.id.imbCI);
         //estabelendo o evento de click no botao
@@ -70,8 +70,11 @@ public class NewItemActivity extends AppCompatActivity {
         btnAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //conferindo se o usuario pegou foto
-                if(photoSelected == null){
+                //pegando URI da selecionada de dentro view model
+                Uri selectedPhotoLocation = vm.getSelectedPhotoLocation();
+
+                //conferindo se o usuario pegou uma foto
+                if(selectedPhotoLocation == null){
                     Toast.makeText(NewItemActivity.this, "É necessário selecionar uma imagem!", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -98,7 +101,7 @@ public class NewItemActivity extends AppCompatActivity {
                 //criando uma nova intenção
                 Intent i = new Intent();
                 //colocando a URI da imagem na intent
-                i.setData(photoSelected);
+                i.setData(selectedPhotoLocation);
                 //colocando o título na intent
                 i.putExtra("title",title);
                 //colocando a descrição na intent
@@ -110,7 +113,28 @@ public class NewItemActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
+
+    @Override
+    protected void onActivityResult(int resquestCode, int resultCode, @Nullable Intent data){
+        super.onActivityResult(resquestCode,resultCode,data);
+        //conferindo se a resposta recebida corresponde ao request
+        if(resquestCode == PHOTO_PICKER_REQUEST){
+            //conferindo se a resposta tem dados
+            if(resultCode == Activity.RESULT_OK){
+                //pegando os dados da resposta e colocando na variavel
+                Uri photoSelected = data.getData();
+                //pegando o campo de imagem pelo id
+                ImageView imvfotoPreview = findViewById(R.id.imvPhotoPreview);
+                //colocando a imagem selecionada dentro do campo de imagem
+                imvfotoPreview.setImageURI(photoSelected);
+                //criando uma nova view model
+                NewItemActivityViewModel vm = new ViewModelProvider(this).get(NewItemActivityViewModel.class);
+                //inserindo uma URI na view model
+                vm.setSelectedPhotoLocation(photoSelected);
+
+            }
+        }
+    }
+
 }

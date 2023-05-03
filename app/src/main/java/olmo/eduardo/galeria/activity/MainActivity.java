@@ -1,6 +1,7 @@
 package olmo.eduardo.galeria.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import olmo.eduardo.galeria.R;
 import olmo.eduardo.galeria.adapter.MyAdapter;
+import olmo.eduardo.galeria.model.MainActivityViewModel;
 import olmo.eduardo.galeria.model.MyItem;
 import olmo.eduardo.galeria.model.Util;
 
@@ -27,8 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
     //variavel que vai identificar quais é a request
     static int NEW_ITEM_REQUEST = 1;
-    //criando a lista que vai armazenar os itens da lista de imagens
-    List<MyItem> itens = new ArrayList<>();
     //estabelecendo que essa classe tem um adapter
     MyAdapter myAdapter;
 
@@ -53,18 +53,31 @@ public class MainActivity extends AppCompatActivity {
 
         //pegando a lista de itens na tela principal pelo id
         RecyclerView rvItens = findViewById(R.id.rvItens);
+
+        //criando um novo view model
+        MainActivityViewModel vm = new ViewModelProvider(this).get(MainActivityViewModel.class);
+
+        //pegando a lista de itens armazenados pelo view model
+        List<MyItem> itens = vm.getItens();
+
         //criando um novo adapter
         myAdapter = new MyAdapter(this,itens);
+
         //estabelecendo que o novo adapter será responsável por configurar a lista de itens
         rvItens.setAdapter(myAdapter);
+
         //estabelecendo que não tem variação do tamanho dos itens da lista
         rvItens.setHasFixedSize(true);
+
         //criando um gerenciar de layout linear
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+
         //estabelecendo que o layout da lista vai ser linear
         rvItens.setLayoutManager(layoutManager);
+
         //criando o divisor de itens
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rvItens.getContext(), DividerItemDecoration.VERTICAL);
+
         //colocando o divisor de itens na lista
         rvItens.addItemDecoration(dividerItemDecoration);
 
@@ -94,6 +107,12 @@ public class MainActivity extends AppCompatActivity {
                 catch (FileNotFoundException e){
                     e.printStackTrace();
                 }
+
+                //criando um novo view model
+                MainActivityViewModel vm = new ViewModelProvider(this).get(MainActivityViewModel.class);
+
+                //pegando a lista de itens armazenados pelo view model
+                List<MyItem> itens = vm.getItens();
 
                 //inserindo o novo item na lista de itens
                 itens.add(myItem);
